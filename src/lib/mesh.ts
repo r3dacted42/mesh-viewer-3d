@@ -30,54 +30,46 @@ export default class Mesh {
         this.transform = new Transform();
         this.color = color;
 
-        console.log(this.vertices);
         if (!this.vertices.normal && this.vertices.indices) {
             this.calculateNormals();
         }
     }
 
     private calculateNormals() {
-        const positions = this.vertices.position;
-        const indices = this.vertices.indices!;
+        const { position: positions, indices } = this.vertices;
         const normals = new Float32Array(positions.length);
 
-        for (let i = 0; i < indices.length; i += 3) {
-            const aIndex = indices[i] * 3;
-            const bIndex = indices[i + 1] * 3;
-            const cIndex = indices[i + 2] * 3;
+        for (let i = 0; i < indices!.length; i += 3) {
+            const a = indices![i] * 3;
+            const b = indices![i + 1] * 3;
+            const c = indices![i + 2] * 3;
 
-            const a = vec3.fromValues(positions[aIndex], positions[aIndex + 1], positions[aIndex + 2]);
-            const b = vec3.fromValues(positions[bIndex], positions[bIndex + 1], positions[bIndex + 2]);
-            const c = vec3.fromValues(positions[cIndex], positions[cIndex + 1], positions[cIndex + 2]);
+            const vA = vec3.fromValues(positions[a], positions[a + 1], positions[a + 2]);
+            const vB = vec3.fromValues(positions[b], positions[b + 1], positions[b + 2]);
+            const vC = vec3.fromValues(positions[c], positions[c + 1], positions[c + 2]);
 
-            const normal = vec3.create();
             const ab = vec3.create();
             const ac = vec3.create();
+            const normal = vec3.create();
 
-            vec3.subtract(ab, b, a);
-            vec3.subtract(ac, c, a);
+            vec3.subtract(ab, vB, vA);
+            vec3.subtract(ac, vC, vA);
             vec3.cross(normal, ab, ac);
             vec3.normalize(normal, normal);
 
-            // Accumulate normals for each vertex of the triangle
-            normals[aIndex] += normal[0];
-            normals[aIndex + 1] += normal[1];
-            normals[aIndex + 2] += normal[2];
-            normals[bIndex] += normal[0];
-            normals[bIndex + 1] += normal[1];
-            normals[bIndex + 2] += normal[2];
-            normals[cIndex] += normal[0];
-            normals[cIndex + 1] += normal[1];
-            normals[cIndex + 2] += normal[2];
+            for (const idx of [a, b, c]) {
+                normals[idx] += normal[0];
+                normals[idx + 1] += normal[1];
+                normals[idx + 2] += normal[2];
+            }
         }
 
-        // Normalize the accumulated normals
         for (let i = 0; i < normals.length; i += 3) {
-            const v = vec3.fromValues(normals[i], normals[i + 1], normals[i + 2]);
-            vec3.normalize(v, v);
-            normals[i] = v[0];
-            normals[i + 1] = v[1];
-            normals[i + 2] = v[2];
+            const n = vec3.fromValues(normals[i], normals[i + 1], normals[i + 2]);
+            vec3.normalize(n, n);
+            normals[i] = n[0];
+            normals[i + 1] = n[1];
+            normals[i + 2] = n[2];
         }
 
         this.vertices.normal = normals;

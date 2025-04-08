@@ -71,7 +71,8 @@ export default class Controls {
         this.scenePane.addButton({
             title: 'upload mesh',
         }).on('click', (_ev) => {
-            // show dialog box etc
+            const meshInput = document.getElementById('mesh-input')!;
+            meshInput.click();
         });
         const xyzBinding = this.scenePane.addBinding(this.ctl, 'xyz', { hidden: true });
         xyzBinding.on('change', (ev) => {

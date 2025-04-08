@@ -21,7 +21,6 @@ const scene = new Scene();
 (async () => {
     const galleonPLY = await (await fetch("/mesh/galleon.ply")).text();
     const galleon = parsePLY(galleonPLY);
-    console.log(galleon);
     if (!galleon) throw Error("ply could not be parsed");
     const galleonMesh = new Mesh(
         "galleon",
@@ -32,20 +31,10 @@ const scene = new Scene();
             indices: galleon.indices,
         },
     );
-    console.log("Mesh has normals after construction:", !!galleonMesh.vertices.normal);
     scene.add(galleonMesh);
-    galleonMesh.transform.translation = vec3.fromValues(0, 0, -400);
-
-    console.log("Galleon mesh details:", {
-        position: galleonMesh.vertices.position.slice(0, 9),  // First 3 vertices
-        normals: galleonMesh.vertices.normal?.slice(0, 9),    // First 3 normals
-        indices: galleonMesh.vertices.indices?.slice(0, 9),   // First 3 face indices
-        vertexCount: galleonMesh.vertices.count,
-        transformScale: galleonMesh.transform.scale
-    });
-    
-    // Add specific scale for galleon
-    galleonMesh.transform.scale = vec3.fromValues(2, 2, 2); // Adjust scale to make it visible
+    galleonMesh.transform.translation = vec3.fromValues(0, 0, -600);
+    galleonMesh.transform.scale = vec3.fromValues(0.5, 0.5, 0.5);
+    // galleonMesh.transform.scale = vec3.fromValues(100, 100, 100);
 })();
 
 const cube = createCubeMesh("testCube", "#00ff00");
