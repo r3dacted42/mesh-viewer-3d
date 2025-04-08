@@ -32,14 +32,26 @@ const scene = new Scene();
             indices: galleon.indices,
         },
     );
+    console.log("Mesh has normals after construction:", !!galleonMesh.vertices.normal);
     scene.add(galleonMesh);
     galleonMesh.transform.translation = vec3.fromValues(0, 0, -400);
-}) ();
 
-// const cube = createCubeMesh("testCube", "#00ff00");
-// cube.transform.scale = vec3.fromValues(100, 100, 100);
-// cube.transform.translation = vec3.fromValues(0, 0, -100);
-// scene.add(cube);
+    console.log("Galleon mesh details:", {
+        position: galleonMesh.vertices.position.slice(0, 9),  // First 3 vertices
+        normals: galleonMesh.vertices.normal?.slice(0, 9),    // First 3 normals
+        indices: galleonMesh.vertices.indices?.slice(0, 9),   // First 3 face indices
+        vertexCount: galleonMesh.vertices.count,
+        transformScale: galleonMesh.transform.scale
+    });
+    
+    // Add specific scale for galleon
+    galleonMesh.transform.scale = vec3.fromValues(2, 2, 2); // Adjust scale to make it visible
+})();
+
+const cube = createCubeMesh("testCube", "#00ff00");
+cube.transform.scale = vec3.fromValues(50, 50, 50);
+cube.transform.translation = vec3.fromValues(150, 0, -400);
+scene.add(cube);
 
 const resizeCanvasToDisplaySize = () => {
     const [width, height] = renderer.getSize();

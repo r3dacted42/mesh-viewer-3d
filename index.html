@@ -22,11 +22,8 @@
     
     void main() {
       gl_Position = (u_projection * u_view * u_model * a_position);
-      // mat3 modelMatrix3x3 = mat3(u_model);
-      // mat3 normalMatrix = transpose(inverse(modelMatrix3x3));
-      // v_normal = normalize(normalMatrix * a_normal);
       mat3 modelMatrix3x3 = mat3(u_model);
-      v_normal = vec3(modelMatrix3x3 * a_normal);
+      v_normal = normalize(modelMatrix3x3 * a_normal);
     }
   </script>
   <script id="fragment-shader-3d" type="x-shader/x-fragment">
