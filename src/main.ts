@@ -14,7 +14,7 @@ renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
 const shader = new Shader('vertex-shader-3d', 'fragment-shader-3d');
 shader.use();
-shader.setUniform3fv('u_lightDirection', vec3.fromValues(0.5, 0.5, 1.0));
+shader.setUniform3fv('u_lightDirection', vec3.fromValues(0.5, 0.5, -1.0));
 
 const scene = new Scene();
 
