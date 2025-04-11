@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/model-viewer-3d/' 
+  base: '/mesh-viewer-3d/' 
 });

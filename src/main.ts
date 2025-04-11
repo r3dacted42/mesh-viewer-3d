@@ -22,7 +22,7 @@ shader.setUniform3fv('u_lightDirection', vec3.fromValues(0.5, 0.5, 1.0));
 const scene = new Scene();
 
 const meshLoader = async (meshName: string) => {
-    const plyText = await (await fetch(`/model-viewer-3d/mesh/${meshName}.ply`)).text();
+    const plyText = await (await fetch(`/mesh-viewer-3d/mesh/${meshName}.ply`)).text();
     const parseResult = parsePLY(plyText);
     if (!parseResult) throw Error(`${meshName}.ply could not be parsed`);
     const mesh = new Mesh(
