@@ -63,7 +63,7 @@ let pointMesh: Mesh | null = null;
         angle: Math.PI / 2,
     });
     spiderMesh.transform.addTranslation(0, -2, 1.5);
-    spiderMesh.color = "#cccccc";
+    spiderMesh.color = "#c0ffcc";
     scene.add(spiderMesh);
     pointMesh = await meshLoader("point");
 }) ();

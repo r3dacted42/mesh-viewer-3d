@@ -10,7 +10,6 @@ export default class Animator {
     pane: Pane;
     pointMesh: () => Mesh;
     lastPos: vec3 | null = null;
-    points: vec3[];
     pointFolders: FolderApi[];
     selectMode: boolean = false;
     selectPtButton!: ButtonApi;
@@ -26,7 +25,6 @@ export default class Animator {
             container: document.getElementById('animation')!,
         });
         this.addControls();
-        this.points = [];
         this.pointFolders = [];
         this.pointMesh = pointMesh;
         this.renderer.domElement.addEventListener('mousemove', (e) => this.onMove(e));
@@ -51,21 +49,21 @@ export default class Animator {
             this.selectMode = true;
             this.selectPtButton.disabled = true;
             this.selectPtButton.title = 'place now';
-            const mesh = Mesh.clone(this.pointMesh(), `point ${this.points.length + 1}`);
+            const mesh = Mesh.clone(this.pointMesh(), `point ${this.scene.points.length + 1}`);
             mesh.selectable = false;
             this.scene.points.push(mesh);
         });
         setInterval(() => {
-            playButton.disabled = this.points.length < 2;
+            playButton.disabled = this.scene.points.length < 2;
             const hideMessage = !(this.renderer.perspectiveMode || this.scene.activeMesh === null);
-            message.hidden = hideMessage || this.points.length >= 2;
-            this.selectPtButton.hidden = !hideMessage || this.points.length >= 2;
+            message.hidden = hideMessage || this.scene.points.length >= 2;
+            this.selectPtButton.hidden = !hideMessage || this.scene.points.length >= 2;
         }, 100);
     }
 
     onMove(event: MouseEvent) {
         if (!this.selectMode || !this.scene.activeMesh) return;
-        const pointMesh = this.scene.points[this.points.length];
+        const pointMesh = this.scene.points[this.scene.points.length - 1];
 
         const rect = this.renderer.domElement.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -88,13 +86,12 @@ export default class Animator {
 
     onClick(_event: MouseEvent) {
         if (this.lastPos === null || !this.selectMode || this.renderer.perspectiveMode || !this.scene.activeMesh) return;
-        const pointMesh = this.scene.points[this.points.length];
+        const pointMesh = this.scene.points[this.scene.points.length - 1];
         this.selectMode = false;
-        this.points.push(this.lastPos);
         this.selectPtButton.disabled = false;
         this.selectPtButton.title = 'place point';
 
-        const folder = this.pane.addFolder({ title: `point ${this.points.length}` });
+        const folder = this.pane.addFolder({ title: `point ${this.scene.points.length}` });
         const meshPos = {
             planar: { x: this.lastPos[0], y: this.lastPos[2] },
             vertical: pointMesh.transform.position[1],
@@ -107,7 +104,7 @@ export default class Animator {
         this.lastPos = null;
     }
 
-    solveQuadraticCoefficients(p0: vec3, p1: vec3, p2: vec3, t1: number): { a: vec3, b: vec3, c: vec3 } {
+    solveQuadraticCoefficients(p0: Readonly<vec3>, p1: Readonly<vec3>, p2: Readonly<vec3>, t1: number): { a: vec3, b: vec3, c: vec3 } {
         const c = vec3.clone(p0); // p(0) = c = p0
         const p2_minus_c = vec3.subtract(vec3.create(), p2, c);
         const p1_minus_c = vec3.subtract(vec3.create(), p1, c);
@@ -121,11 +118,14 @@ export default class Animator {
 
     playAnimation() {
         const mesh = this.scene.activeMesh;
-        if (!mesh || this.points.length < 2) return;
+        if (!mesh || this.scene.points.length < 2) return;
 
         let t = 0;
         const { a, b, c } = this.solveQuadraticCoefficients(
-            mesh.transform.position, this.points[0], this.points[1], this.t1
+            mesh.transform.translation, 
+            this.scene.points[0].transform.translation,
+            this.scene.points[1].transform.translation,
+            this.t1
         );
         const getCoord = (t: number) => {
             const at2 = vec3.scale(vec3.create(), a, t * t);
@@ -135,17 +135,17 @@ export default class Animator {
         }
 
         const animate = () => {
-            t += 0.005 * this.animSpeed;
+            t += 0.001 * this.animSpeed;
             if (t > 1) {
                 for (let i = 0; i < 2; i++) {
                     this.scene.points.pop();
-                    this.points.pop();
                     this.pointFolders.pop()?.dispose();
                 }
                 this.scene.activeMesh = null;
                 return;
             }
-            mesh.transform.translation = getCoord(t);
+            const coord = getCoord(t);
+            mesh.transform.translation = coord;
             requestAnimationFrame(animate);
         };
 

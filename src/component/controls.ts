@@ -197,6 +197,7 @@ export default class Controls {
             else this.ctl.idx = -1;
             idxBinding.refresh();
             const disabled = this.scene.points.length > 0;
+            xyzBinding.disabled = disabled;
             uploadButton.disabled = disabled;
             idxBinding.disabled = disabled;
             deleteButton.disabled = disabled;
