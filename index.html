@@ -21,6 +21,7 @@
     varying vec3 v_normal;
     
     void main() {
+      gl_PointSize = 5.0;
       gl_Position = (u_projection * u_view * u_model * a_position);
       mat3 modelMatrix3x3 = mat3(u_model);
       v_normal = normalize(modelMatrix3x3 * a_normal);
@@ -44,8 +45,9 @@
   <div id="controls">
     <div id="camera"></div>
     <div id="scene"></div>
+    <div id="animation"></div>
   </div>
-  <input type="file" id="mesh-input" style="display: none;" accept=".ply,.obj" />
+  <input type="file" id="mesh-input" style="display: none;" accept=".ply" />
 
   <script type="module" src="/src/main.ts"></script>
 </body>

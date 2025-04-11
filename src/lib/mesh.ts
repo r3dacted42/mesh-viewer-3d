@@ -17,7 +17,9 @@ export default class Mesh {
         indices?: Uint32Array | Uint16Array;
     };
     transform: Transform;
+    boundingRadius: number;
     color: string;
+    selectable: boolean = true;
 
     constructor(name: string, data: ParseResult, color = "#fff") {
         this.name = name;
@@ -27,7 +29,9 @@ export default class Mesh {
             normal: data.normal ? new Float32Array(data.normal) : undefined,
             indices: data.indices ? (data.vertexCount > 65535 ? new Uint32Array(data.indices) : new Uint16Array(data.indices)) : undefined,
         };
-        this.transform = new Transform();
+        const { centroid, boundingRadius } = this.computeBoundingSphere(this.vertices.position);
+        this.boundingRadius = boundingRadius;
+        this.transform = new Transform(centroid);
         this.color = color;
 
         if (!this.vertices.normal && this.vertices.indices) {
@@ -73,5 +77,33 @@ export default class Mesh {
         }
 
         this.vertices.normal = normals;
+    }
+    
+    computeBoundingSphere(vertices: Float32Array) {
+        const centroid = vec3.create();
+        for (let i = 0; i < vertices.length; i += 3) {
+            vec3.add(centroid, centroid, vec3.fromValues(vertices[i], vertices[i + 1], vertices[i + 2]));
+        }
+        vec3.scale(centroid, centroid, 1 / (vertices.length / 3));
+        let maxDistanceSq = 0;
+        for (let i = 0; i < vertices.length; i += 3) {
+            const v = vec3.fromValues(vertices[i], vertices[i + 1], vertices[i + 2]);
+            const distSq = vec3.squaredDistance(v, centroid);
+            if (distSq > maxDistanceSq) maxDistanceSq = distSq;
+        }
+        return {
+            centroid,
+            boundingRadius: Math.sqrt(maxDistanceSq),
+        };
+    }
+
+    static clone(original: Mesh, newName: string): Mesh {
+        const cloned = new Mesh(newName, {
+            vertexCount: original.vertices.count,
+            position: Array.from(original.vertices.position),
+            normal: original.vertices.normal ? Array.from(original.vertices.normal) : undefined,
+            indices: original.vertices.indices ? Array.from(original.vertices.indices) : undefined,
+        }, original.color);
+        return cloned;
     }
 }

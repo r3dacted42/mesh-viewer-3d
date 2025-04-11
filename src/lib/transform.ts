@@ -1,4 +1,4 @@
-import { mat4, quat, vec3 } from "gl-matrix";
+import { mat4, quat, vec3, vec4 } from "gl-matrix";
 
 interface AxisAngle {
     axis: vec3;
@@ -22,9 +22,22 @@ export default class Transform {
         this._centroid = centroid;
     }
 
+    get centroid(): vec3 {
+        return this._centroid;
+    }
     set centroid(newCentroid: vec3) {
         vec3.copy(this._centroid, newCentroid);
         this._modified = true;
+    }
+    get position(): vec3 {
+        const pos = vec4.fromValues(
+            this._centroid[0],
+            this._centroid[1],
+            this._centroid[2],
+            1,
+        );
+        vec4.transformMat4(pos, pos, this.transformMatrix);
+        return vec3.fromValues(pos[0], pos[1], pos[2]);
     }
 
     get translation(): Readonly<vec3> {
@@ -61,6 +74,12 @@ export default class Transform {
     set rotation(axisAngle: AxisAngle) {
         quat.setAxisAngle(this._rotate, vec3.normalize(axisAngle.axis, axisAngle.axis), axisAngle.angle);
         this._modified = true;
+    }
+    applyRotation(axisAngle: AxisAngle) {
+        const deltaQuat = quat.create();
+        quat.setAxisAngle(deltaQuat, axisAngle.axis, axisAngle.angle);
+        quat.multiply(this._rotate, deltaQuat, this._rotate);
+        quat.normalize(this._rotate, this._rotate);
     }
     rotateAboutAxis(axis: 'x' | 'y' | 'z', angle: number): this {
         switch (axis) {
