@@ -19,7 +19,7 @@ export default class WebGLRenderer {
             this.domElement.getContext("experimental-webgl") as WebGLRenderingContext;
         if (!this.gl) throw new Error("WebGL not supported!");
         window.glContext = this.gl;
-        this.gl.enable(this.gl.CULL_FACE);
+        // this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.clear("#242424");
         this.perscamera = new PerspectiveCamera(this.gl.canvas.width, this.gl.canvas.height);

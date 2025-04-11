@@ -55,7 +55,8 @@ export default class PerspectiveCamera {
 
     lookAt(target: Mesh) {
         vec3.copy(this.target, target.transform.position);
-        this._distance = target.boundingRadius * 3;
+        const scale = target.transform.scale;
+        this._distance = target.boundingRadius * 3 * Math.min(...scale);
         this.updatePosition();
     }
 

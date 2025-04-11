@@ -200,7 +200,7 @@ export default class Controls {
             xyzBinding.disabled = disabled;
             uploadButton.disabled = disabled;
             idxBinding.disabled = disabled;
-            deleteButton.disabled = disabled;
+            deleteButton.disabled = disabled || !this.scene.activeMesh;
         }, 100);
     }
 

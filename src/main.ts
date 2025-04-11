@@ -4,7 +4,6 @@ import parsePLY from './lib/parsePLY';
 import WebGLRenderer from './lib/renderer';
 import Scene from './lib/scene';
 import Shader from './lib/shader';
-// import { createCubeMesh } from './lib/utils';
 import './style.css'
 import Controls from './component/controls';
 import OrbitalController from './lib/orbital';
@@ -39,6 +38,7 @@ const meshLoader = async (meshName: string) => {
 };
 
 let pointMesh: Mesh | null = null;
+// load initial meshes
 (async () => {
     const xAxis = await meshLoader("axis");
     xAxis.name = "x_axis";
@@ -57,21 +57,18 @@ let pointMesh: Mesh | null = null;
     zAxis.color = "#0000ff";
     scene.axes.push(xAxis, yAxis, zAxis);
     const spiderMesh = await meshLoader("big_spider");
-    // spiderMesh.transform.rotateAboutAxis('x', -Math.PI / 2);
-    // spiderMesh.transform.applyRotation({
-    //     axis: vec3.fromValues(0, 1, 0),
-    //     angle: Math.PI / 2,
-    // });
-    // spiderMesh.transform.addTranslation(0, -2, 1.5);
     spiderMesh.color = "#c0ffcc";
     scene.add(spiderMesh);
+    const boolBevel = await meshLoader("boolean_bevel");
+    boolBevel.color = "#3ecdff";
+    boolBevel.transform.addTranslation(0, -5, 0);
+    scene.add(boolBevel);
+    const cutsInset = await meshLoader("cuts_inset");
+    cutsInset.color = "#ffe4cc";
+    cutsInset.transform.addTranslation(-5, 0, 0);
+    scene.add(cutsInset);
     pointMesh = await meshLoader("point");
 }) ();
-
-// const cube = createCubeMesh("testCube", "#00ff00");
-// cube.transform.scale = vec3.fromValues(50, 50, 50);
-// cube.transform.translation = vec3.fromValues(0, 0, 0);
-// scene.add(cube);
 
 const resizeCanvasToDisplaySize = () => {
     const [width, height] = renderer.getSize();
