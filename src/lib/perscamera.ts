@@ -11,7 +11,7 @@ export default class PerspectiveCamera {
     target: vec3;
     up: vec3;
     private _distance: number;
-    rotation: { x: number, y: number };
+    rotation: { x: number, z: number };
 
     readonly projectionMatrix: mat4;
     readonly viewMatrix: mat4;
@@ -24,25 +24,25 @@ export default class PerspectiveCamera {
         this._near = 1;
         this._far = 2000;
 
-        this.position = vec3.fromValues(0, 100, 100);
+        this.position = vec3.fromValues(100, 100, 0);
         this.target = vec3.fromValues(0, 0, 0);
-        this.up = vec3.fromValues(0, 1, 0);
+        this.up = vec3.fromValues(0, 0, 1);
         this._distance = 20;
-        this.rotation = { x: Math.PI / 6, y: Math.PI / 6 };
+        this.rotation = { x: Math.PI / 6, z: Math.PI / 3 };
 
         this.updatePosition();
         this.updateProjectionMatrix();
     }
 
     updatePosition() {
-        const sinY = Math.sin(this.rotation.y);
-        const cosY = Math.cos(this.rotation.y);
+        const sinY = Math.sin(this.rotation.z);
+        const cosY = Math.cos(this.rotation.z);
         const sinX = Math.sin(this.rotation.x);
         const cosX = Math.cos(this.rotation.x);
 
         const x = this._distance * cosX * sinY;
-        const y = this._distance * sinX;
-        const z = this._distance * cosX * cosY;
+        const y = this._distance * cosX * cosY;
+        const z = this._distance * sinX;
 
         vec3.set(this.position,
             this.target[0] + x,
@@ -59,9 +59,9 @@ export default class PerspectiveCamera {
         this.updatePosition();
     }
 
-    setRotation(x: number, y: number) {
+    setRotation(x: number, z: number) {
         this.rotation.x = x;
-        this.rotation.y = y;
+        this.rotation.z = z;
         this.updatePosition();
     }
 
@@ -109,9 +109,9 @@ export default class PerspectiveCamera {
         this._far = 2000;
         this.position = vec3.fromValues(0, 100, 100);
         this.target = vec3.fromValues(0, 0, 0);
-        this.up = vec3.fromValues(0, 1, 0);
+        this.up = vec3.fromValues(0, 0, 1);
         this._distance = 20;
-        this.rotation = { x: Math.PI / 6, y: Math.PI / 6 };
+        this.rotation = { x: Math.PI / 6, z: Math.PI / 3 };
         this.updatePosition();
         this.updateProjectionMatrix();
     }

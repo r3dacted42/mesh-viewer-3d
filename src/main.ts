@@ -57,12 +57,12 @@ let pointMesh: Mesh | null = null;
     zAxis.color = "#0000ff";
     scene.axes.push(xAxis, yAxis, zAxis);
     const spiderMesh = await meshLoader("big_spider");
-    spiderMesh.transform.rotateAboutAxis('x', -Math.PI / 2);
-    spiderMesh.transform.applyRotation({
-        axis: vec3.fromValues(0, 1, 0),
-        angle: Math.PI / 2,
-    });
-    spiderMesh.transform.addTranslation(0, -2, 1.5);
+    // spiderMesh.transform.rotateAboutAxis('x', -Math.PI / 2);
+    // spiderMesh.transform.applyRotation({
+    //     axis: vec3.fromValues(0, 1, 0),
+    //     angle: Math.PI / 2,
+    // });
+    // spiderMesh.transform.addTranslation(0, -2, 1.5);
     spiderMesh.color = "#c0ffcc";
     scene.add(spiderMesh);
     pointMesh = await meshLoader("point");

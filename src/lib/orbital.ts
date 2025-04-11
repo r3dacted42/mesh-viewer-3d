@@ -37,7 +37,7 @@ export default class OrbitalController {
         const deltaX = event.clientX - this.previousMousePosition.x;
         const deltaY = event.clientY - this.previousMousePosition.y;
 
-        this.camera.rotation.y -= deltaX * 0.005;
+        this.camera.rotation.z += deltaX * 0.005;
         this.camera.rotation.x += deltaY * 0.005;
         this.camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.camera.rotation.x));
 

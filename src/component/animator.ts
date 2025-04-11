@@ -76,12 +76,9 @@ export default class Animator {
         if (!inverseVP) return;
 
         vec4.transformMat4(ndc, ndc, inverseVP);
-        const world = vec3.fromValues(ndc[0] / ndc[3], ndc[1] / ndc[3], ndc[2] / ndc[3]);
-
-        const targetY = this.scene.activeMesh.transform.translation[1];
-        const point = vec3.fromValues(world[0], targetY, world[2]);
-        pointMesh.transform.translation = point;
-        this.lastPos = point;
+        const world = vec3.fromValues(ndc[0] / ndc[3], ndc[1] / ndc[3], this.scene.activeMesh.transform.translation[2]);
+        pointMesh.transform.translation = world;
+        this.lastPos = vec3.clone(world);
     }
 
     onClick(_event: MouseEvent) {
@@ -93,13 +90,13 @@ export default class Animator {
 
         const folder = this.pane.addFolder({ title: `point ${this.scene.points.length}` });
         const meshPos = {
-            planar: { x: this.lastPos[0], y: this.lastPos[2] },
-            vertical: pointMesh.transform.position[1],
+            planar: { x: this.lastPos[0], y: this.lastPos[1] }, // XY plane
+            vertical: this.lastPos[2], // Z axis
         };
-        folder.addBinding(meshPos, 'planar', { label: "XZ" })
-            .on('change', (ev) => { pointMesh.transform.translation = vec3.fromValues(ev.value.x, meshPos.vertical, ev.value.y) });
-        folder.addBinding(meshPos, 'vertical', { label: "Y" })
-            .on('change', (ev) => { pointMesh.transform.translation = vec3.fromValues(meshPos.planar.x, ev.value, meshPos.planar.y) });
+        folder.addBinding(meshPos, 'planar', { label: "XY" })
+            .on('change', (ev) => { pointMesh.transform.translation = vec3.fromValues(ev.value.x, ev.value.y, meshPos.vertical); });
+        folder.addBinding(meshPos, 'vertical', { label: "Z" })
+            .on('change', (ev) => { pointMesh.transform.translation = vec3.fromValues(meshPos.planar.x, meshPos.planar.y, ev.value); });
         this.pointFolders.push(folder);
         this.lastPos = null;
     }
@@ -122,7 +119,7 @@ export default class Animator {
 
         let t = 0;
         const { a, b, c } = this.solveQuadraticCoefficients(
-            mesh.transform.translation, 
+            mesh.transform.translation,
             this.scene.points[0].transform.translation,
             this.scene.points[1].transform.translation,
             this.t1
@@ -132,7 +129,7 @@ export default class Animator {
             const bt = vec3.scale(vec3.create(), b, t);
             vec3.add(at2, at2, bt);
             return vec3.add(at2, at2, c);
-        }
+        };
 
         const animate = () => {
             t += 0.001 * this.animSpeed;

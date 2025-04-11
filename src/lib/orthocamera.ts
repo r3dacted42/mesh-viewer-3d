@@ -26,9 +26,9 @@ export default class OrthographicCamera {
         this.near = -1000;
         this.far = 1000;
 
-        this.position = vec3.fromValues(0, 100, 0);
+        this.position = vec3.fromValues(0, 0, 100);
         this.target = vec3.fromValues(0, 0, 0);
-        this.up = vec3.fromValues(0, 0, -1); // Looking down the Y axis
+        this.up = vec3.fromValues(0, 1, 0);
 
         this.updateProjectionMatrix();
         this.updateViewMatrix();
@@ -61,11 +61,11 @@ export default class OrthographicCamera {
         this.updateProjectionMatrix();
     }
 
-    pan(dx: number, dz: number) {
+    pan(dx: number, dy: number) {
         this.position[0] += dx;
         this.target[0] += dx;
-        this.position[2] -= dz;
-        this.target[2] -= dz;
+        this.position[1] += dy;
+        this.target[1] += dy;
         this.updateViewMatrix();
     }
 
@@ -78,9 +78,9 @@ export default class OrthographicCamera {
 
     reset() {
         this.zoom = 3;
-        this.position = vec3.fromValues(0, 100, 0);
+        this.position = vec3.fromValues(0, 0, 100);
         this.target = vec3.fromValues(0, 0, 0);
-        this.up = vec3.fromValues(0, 0, -1);
+        this.up = vec3.fromValues(0, 1, 0);
         this.updateProjectionMatrix();
         this.updateViewMatrix();
     }
