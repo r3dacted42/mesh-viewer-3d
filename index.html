@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/model-viewer-3d/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mesh Viewer 3D</title>
+  <script type="module" crossorigin src="/model-viewer-3d/assets/index-DKu2Hyzb.js"></script>
+  <link rel="stylesheet" crossorigin href="/model-viewer-3d/assets/index-B7XA9OPq.css">
+</head>
+
+<body>
+  <canvas id="main-canvas"></canvas>
+
+  <script id="vertex-shader-3d" type="x-shader/x-vertex">
+    attribute vec4 a_position;
+    attribute vec3 a_normal;
+    uniform mat4 u_projection;
+    uniform mat4 u_view;
+    uniform mat4 u_model;
+
+    varying vec3 v_normal;
+    
+    void main() {
+      gl_PointSize = 5.0;
+      gl_Position = (u_projection * u_view * u_model * a_position);
+      mat3 modelMatrix3x3 = mat3(u_model);
+      v_normal = normalize(modelMatrix3x3 * a_normal);
+    }
+  </script>
+  <script id="fragment-shader-3d" type="x-shader/x-fragment">
+    precision mediump float;
+    uniform vec4 u_color;
+    uniform vec3 u_lightDirection;
+
+    varying vec3 v_normal;
+    
+    void main () {
+      vec3 normal = normalize(v_normal);
+      float nDotL = max(dot(normal, normalize(u_lightDirection)), 0.0);
+      vec4 litColor = vec4(u_color.rgb * nDotL, u_color.a);
+      gl_FragColor = litColor;
+    }
+  </script>
+
+  <div id="controls">
+    <div id="camera"></div>
+    <div id="scene"></div>
+    <div id="animation"></div>
+  </div>
+  <input type="file" id="mesh-input" style="display: none;" accept=".ply" />
+
+</body>
+
+</html>
